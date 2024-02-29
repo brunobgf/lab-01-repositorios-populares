@@ -16,5 +16,5 @@ Neste laboratório, vamos estudar as principais características de sistemas pop
 
 * [Relatório](docs/README.md)
 * [Scripts](scripts)
+* [Resultado](scripts/output_csv_repos/repos.csv)
 * [Conjunto de dados](scripts/dataset)
-  
