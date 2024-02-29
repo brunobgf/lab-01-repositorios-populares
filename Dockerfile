@@ -1,10 +1,10 @@
 FROM python:3.9.18
 
-COPY . ./app
-
 WORKDIR /app
 
 RUN pip install python-dotenv
+
+COPY . .
 
 RUN pip install -r ./scripts/requirements.txt
 
