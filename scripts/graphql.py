@@ -16,38 +16,38 @@ def run_query(query, headers):
 
 def time_since_last_update(last_update_date):
     current_date = datetime.utcnow()
-    
+
     last_update_date = datetime.strptime(last_update_date, '%Y-%m-%dT%H:%M:%SZ')
-    
+
     difference = current_date - last_update_date
-    
+
     days = difference.days
     seconds = difference.seconds
-    
+
     elapsed_days = days
     elapsed_hours = seconds // 3600
     elapsed_minutes = (seconds % 3600) // 60
     elapsed_seconds = seconds % 60
-    
+
     return f'{elapsed_days} days {elapsed_hours} hours {elapsed_minutes} minutes {elapsed_seconds} seconds'
 
 
 def calculate_age(date_of_birth):
     current_date = datetime.utcnow()
-    
+
     date_of_birth = datetime.strptime(date_of_birth, '%Y-%m-%dT%H:%M:%SZ')
-    
+
     difference = current_date - date_of_birth
-    
+
     age = difference.days // 365
-    
+
     return age
 
 index = 1
 data = []
 end_cursor = "null"
-num_repos = 100
-while len(data) < num_repos: 
+num_repos = 1000
+while len(data) < num_repos:
   query = '''{
     search (
           query: "stars:>20000"
@@ -66,13 +66,13 @@ while len(data) < num_repos:
                 stargazerCount
                 url
                 createdAt
-                updatedAt 
+                updatedAt
                 primaryLanguage {
                   name
-                }  
+                }
                 pullRequests(states: MERGED) {
                   totalCount
-                }    
+                }
                 total_issues:issues {
                   totalCount
                 }
@@ -113,7 +113,7 @@ while len(data) < num_repos:
       total_releases = repo['releases']['totalCount']
 
     data.append({
-      'name': repo['nameWithOwner'].split('/')[1], 
+      'name': repo['nameWithOwner'].split('/')[1],
       'owner': repo['nameWithOwner'].split('/')[0],
       'url': repo['url'],
       'stars': repo['stargazerCount'],
@@ -124,7 +124,7 @@ while len(data) < num_repos:
       'primary_language': primary_language_name,
       'number_pr_accepted': repo['pullRequests']['totalCount'],
       'issues_reason': issues_reason,
-      'total_releases': total_releases,    
+      'total_releases': total_releases,
       'index': index
     })
     index += 1

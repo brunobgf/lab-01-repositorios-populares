@@ -1,11 +1,11 @@
-FROM python:3.9.18
-
-WORKDIR /app
+FROM python:3
 
 RUN pip install python-dotenv
 
-COPY . .
+COPY . /app
 
-RUN pip install -r ./scripts/requirements.txt
+WORKDIR /app/scripts
 
-CMD ["python", "./scripts/graphql.py"]
+RUN pip install -r ./requirements.txt
+
+CMD ["python", "./graphql.py"]

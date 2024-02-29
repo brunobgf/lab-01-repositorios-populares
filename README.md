@@ -12,6 +12,17 @@ Neste laboratório, vamos estudar as principais características de sistemas pop
 * Matheus Vieira dos Santos
 * Marcio Lucas Machado
 
+## Execução
+
+### Pré-requisitos
+* Docker instalado e rodando na máquina
+
+### Build
+* `make build`
+
+### Rodar
+* `make run`
+
 ## Artefatos:
 
 * [Relatório](docs/README.md)
