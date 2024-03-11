@@ -1,3 +1,7 @@
+clean:
+	docker rm $(docker ps -a -q)
+	docker rmi $(docker images -q)
+
 build:
 	docker build . -t lab1
 

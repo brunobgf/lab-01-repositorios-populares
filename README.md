@@ -17,9 +17,6 @@ Neste laboratório, vamos estudar as principais características de sistemas pop
 ### Pré-requisitos
 * Docker instalado e rodando na máquina
 
-### Build
-* `make build`
-
 ### Rodar
 * `make run`
 

@@ -65,6 +65,13 @@ while len(data) < num_repos:
                 nameWithOwner
                 stargazerCount
                 url
+                languages(first: 1) {
+                  edges {
+                    node {
+                      name
+                    }
+                  }
+                }
                 createdAt
                 updatedAt
                 primaryLanguage {
@@ -79,14 +86,21 @@ while len(data) < num_repos:
                 closed_issues:issues(states:CLOSED) {
                   totalCount
                 }
-                releases {
+                releases (first: 100) {
+                  totalCount
+                  nodes {
+                    createdAt
+                  }
+                }
+                collaborators {
                   totalCount
                 }
+                forkCount
               }
             }
           }
         }
-  }
+}
   '''
   dotenv.load_dotenv()
   headers = {"Authorization": f"Bearer {os.environ['API_TOKEN']}"}
