@@ -50,57 +50,57 @@ num_repos = 1000
 while len(data) < num_repos:
   query = '''{
     search (
-          query: "stars:>20000"
-          type: REPOSITORY
-          first: 25
-          after: ''' + end_cursor + '''
-        ) {
-          pageInfo {
-            endCursor
-            hasNextPage
-          }
-          edges {
-            node {
-              ... on Repository {
-                nameWithOwner
-                stargazerCount
-                url
-                languages(first: 1) {
-                  edges {
-                    node {
-                      name
-                    }
-                  }
-                }
-                createdAt
-                updatedAt
-                primaryLanguage {
+        query: "stars:>20000"
+        type: REPOSITORY
+        first: 20
+        after: ''' + end_cursor + '''
+      ) {
+        pageInfo {
+        endCursor
+        hasNextPage
+      }
+      edges {
+        node {
+          ... on Repository {
+            nameWithOwner
+            stargazerCount
+            url
+            languages(first: 1) {
+              edges {
+                node {
                   name
                 }
-                pullRequests(states: MERGED) {
-                  totalCount
-                }
-                total_issues:issues {
-                  totalCount
-                }
-                closed_issues:issues(states:CLOSED) {
-                  totalCount
-                }
-                releases (first: 100) {
-                  totalCount
-                  nodes {
-                    createdAt
-                  }
-                }
-                collaborators {
-                  totalCount
-                }
-                forkCount
               }
             }
+            createdAt
+            updatedAt
+            primaryLanguage {
+              name
+            }
+            pullRequests(states: MERGED) {
+              totalCount
+            }
+            total_issues: issues {
+              totalCount
+            }
+            closed_issues: issues(states: CLOSED) {
+              totalCount
+            }
+            releases(first: 100) {
+              totalCount
+              nodes {
+                createdAt
+                author {
+                  login
+                }
+              }
+            }
+            forkCount
           }
         }
-}
+      }
+    }
+  }
   '''
   dotenv.load_dotenv()
   headers = {"Authorization": f"Bearer {os.environ['API_TOKEN']}"}
@@ -114,6 +114,7 @@ while len(data) < num_repos:
   repositories.extend(list(map(lambda x: x['node'], result['edges'])))
 
   for repo in repositories:
+    # print(json.dumps(repo, indent=1))
     primary_language_name = None
     if repo['primaryLanguage'] is not None and repo['primaryLanguage']['name'] is not None:
       primary_language_name = repo['primaryLanguage']['name']
@@ -125,6 +126,11 @@ while len(data) < num_repos:
     total_releases = None
     if repo['releases']['totalCount'] > 0:
       total_releases = repo['releases']['totalCount']
+
+    total_collaborators = 1
+    if repo['releases'] is not None and repo['releases']['nodes'] is not None and len(repo['releases']['nodes']) > 0:
+
+      total_collaborators = len(set(map(lambda x: None if x['author'] is None else x['author']['login'], repo['releases']['nodes'])))
 
     data.append({
       'name': repo['nameWithOwner'].split('/')[1],
@@ -139,11 +145,14 @@ while len(data) < num_repos:
       'number_pr_accepted': repo['pullRequests']['totalCount'],
       'issues_reason': issues_reason,
       'total_releases': total_releases,
+      'last_release': None if total_releases is None or len(repo['releases']['nodes']) is 0 else repo['releases']['nodes'][0]['createdAt'],
+      'total_collaborators': total_collaborators,
+      'forks': repo['forkCount'],
       'index': index
     })
     index += 1
 
-print(json.dumps(data, indent=1))
+# print(json.dumps(data, indent=1))
 
 df = pd.DataFrame(data=data)
 # recs = df.to_records(index=False)
@@ -153,3 +162,5 @@ if not os.path.exists('./output_csv_repos'):
   os.mkdir('./output_csv_repos')
 
 df.to_csv('./output_csv_repos/repos.csv', index=False)
+
+print('Finished')
